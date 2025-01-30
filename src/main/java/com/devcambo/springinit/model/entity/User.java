@@ -13,14 +13,15 @@ import lombok.*;
 @Entity
 @Table(name = "users")
 public class User extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
 
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "user_id")
+  private Long userId;
 
-    @Column(name = "gender", nullable = false)
-    private Gender gender;
+  @Column(name = "email", nullable = false, unique = true)
+  private String email;
+
+  @Column(name = "gender", nullable = false)
+  private Gender gender;
 }

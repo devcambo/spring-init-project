@@ -5,3 +5,6 @@ spring:
     name: "spring-init-default"
   profiles:
     active: "dev"
+  web:
+    resources:
+      add-mappings: "false"

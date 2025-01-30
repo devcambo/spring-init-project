@@ -113,6 +113,7 @@ public class UserController {
     return ResponseEntity
       .ok()
       .cacheControl(CacheControl.maxAge(30, TimeUnit.SECONDS))
+      .eTag("version-1.0")
       .body(
         new APIResponse(
           true,
