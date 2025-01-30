@@ -11,7 +11,6 @@ public record UserRequestDto(
   @Email(message = "Invalid email address!")
   @Schema(description = "Email address", example = "example@example.com")
   String email,
-  @NotEmpty(message = "Gender is required!")
-  @Schema(description = "Gender", example = "MALE")
+  @Schema(description = "Gender", example = "MALE", implementation = Gender.class)
   Gender gender
 ) {}
