@@ -23,5 +23,6 @@ public class User extends BaseEntity {
   private String email;
 
   @Column(name = "gender", nullable = false)
+  @Enumerated(EnumType.STRING)
   private Gender gender;
 }
