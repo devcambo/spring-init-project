@@ -7,11 +7,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-/*
-* TODO: handle gender validation when (gender is empty or invalid)
-* */
-@Schema(name = "UserRequestDto", description = "User request schema")
-public record UserRequestDto(
+@Schema(name = "UserCreationDto", description = "User creation request schema")
+public record UserCreationDto(
   @NotEmpty(message = "Email is required!")
   @Email(message = "Invalid email address!")
   @UniqueEmail

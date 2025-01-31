@@ -3,7 +3,8 @@ package com.devcambo.springinit.service.impl;
 import com.devcambo.springinit.exception.InvalidSortFieldException;
 import com.devcambo.springinit.exception.ResourceNotFoundException;
 import com.devcambo.springinit.mapper.UserMapper;
-import com.devcambo.springinit.model.dto.request.UserRequestDto;
+import com.devcambo.springinit.model.dto.request.UserCreationDto;
+import com.devcambo.springinit.model.dto.request.UserUpdateDto;
 import com.devcambo.springinit.model.dto.response.UserResponseDto;
 import com.devcambo.springinit.model.entity.User;
 import com.devcambo.springinit.repo.UserRepo;
@@ -51,16 +52,16 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public UserResponseDto create(UserRequestDto userRequestDto) {
-    User user = userMapper.toEntity(userRequestDto);
+  public UserResponseDto create(UserCreationDto userCreationDto) {
+    User user = userMapper.toEntity(userCreationDto);
     User savedUser = userRepo.save(user);
     return userMapper.toDto(savedUser);
   }
 
   @Override
-  public UserResponseDto update(Long userId, UserRequestDto userRequestDto) {
+  public UserResponseDto update(Long userId, UserUpdateDto userUpdateDto) {
     User existingUser = getUserById(userId);
-    userMapper.updateFromDto(userRequestDto, existingUser);
+    userMapper.updateFromDto(userUpdateDto, existingUser);
     User savedUser = userRepo.save(existingUser);
     return userMapper.toDto(savedUser);
   }

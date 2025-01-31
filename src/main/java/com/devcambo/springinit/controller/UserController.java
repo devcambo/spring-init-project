@@ -3,7 +3,8 @@ package com.devcambo.springinit.controller;
 import com.devcambo.springinit.constant.StatusCode;
 import com.devcambo.springinit.model.base.APIResponse;
 import com.devcambo.springinit.model.base.ErrorResponse;
-import com.devcambo.springinit.model.dto.request.UserRequestDto;
+import com.devcambo.springinit.model.dto.request.UserCreationDto;
+import com.devcambo.springinit.model.dto.request.UserUpdateDto;
 import com.devcambo.springinit.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -243,7 +244,7 @@ public class UserController {
   )
   @PostMapping
   public ResponseEntity<APIResponse> createUser(
-    @Valid @RequestBody UserRequestDto userRequestDto
+    @Valid @RequestBody UserCreationDto userCreationDto
   ) {
     return ResponseEntity
       .status(HttpStatus.CREATED)
@@ -252,7 +253,7 @@ public class UserController {
           true,
           StatusCode.CREATED,
           "User created successfully",
-          userService.create(userRequestDto)
+          userService.create(userCreationDto)
         )
       );
   }
@@ -316,7 +317,7 @@ public class UserController {
   @PutMapping("/{userId}")
   public ResponseEntity<APIResponse> updateUser(
     @PathVariable Long userId,
-    @Valid @RequestBody UserRequestDto userRequestDto
+    @Valid @RequestBody UserUpdateDto userUpdateDto
   ) {
     return ResponseEntity
       .status(HttpStatus.OK)
@@ -325,7 +326,7 @@ public class UserController {
           true,
           StatusCode.OK,
           "User updated successfully",
-          userService.update(userId, userRequestDto)
+          userService.update(userId, userUpdateDto)
         )
       );
   }

@@ -1,6 +1,7 @@
 package com.devcambo.springinit.mapper;
 
-import com.devcambo.springinit.model.dto.request.UserRequestDto;
+import com.devcambo.springinit.model.dto.request.UserCreationDto;
+import com.devcambo.springinit.model.dto.request.UserUpdateDto;
 import com.devcambo.springinit.model.dto.response.UserResponseDto;
 import com.devcambo.springinit.model.entity.User;
 import org.mapstruct.Mapper;
@@ -25,8 +26,8 @@ public interface UserMapper {
       @Mapping(source = "gender", target = "gender"),
     }
   )
-  User toEntity(UserRequestDto userRequestDto);
+  User toEntity(UserCreationDto userCreationDto);
 
   @Mapping(target = "userId", ignore = true)
-  void updateFromDto(UserRequestDto dto, @MappingTarget User entity);
+  void updateFromDto(UserUpdateDto dto, @MappingTarget User entity);
 }

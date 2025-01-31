@@ -1,6 +1,7 @@
 package com.devcambo.springinit.service;
 
-import com.devcambo.springinit.model.dto.request.UserRequestDto;
+import com.devcambo.springinit.model.dto.request.UserCreationDto;
+import com.devcambo.springinit.model.dto.request.UserUpdateDto;
 import com.devcambo.springinit.model.dto.response.UserResponseDto;
 import org.springframework.data.domain.Page;
 
@@ -32,19 +33,19 @@ public interface UserService {
   /**
    * Creates a new user.
    *
-   * @param userRequestDto The UserRequestDto object containing the user's details.
+   * @param userCreationDto The UserRequestDto object containing the user's details.
    * @return The UserResponseDto object for the newly created user.
    */
-  UserResponseDto create(UserRequestDto userRequestDto);
+  UserResponseDto create(UserCreationDto userCreationDto);
 
   /**
    * Updates an existing user.
    *
    * @param userId The ID of the user to update.
-   * @param userRequestDto The UserRequestDto object containing the updated user's details.
+   * @param userUpdateDto The UserRequestDto object containing the updated user's details.
    * @return The UserResponseDto object for the updated user.
    */
-  UserResponseDto update(Long userId, UserRequestDto userRequestDto);
+  UserResponseDto update(Long userId, UserUpdateDto userUpdateDto);
 
   /**
    * Deletes a user by their ID.
