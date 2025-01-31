@@ -12,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class ErrorResponse {
+public class ErrorInfo {
 
   @Schema(description = "Flag indicating whether the response is an error or not")
   private boolean flag;
@@ -26,7 +26,7 @@ public class ErrorResponse {
   @Schema(description = "Actual error object returned in the response")
   private Object error;
 
-  public ErrorResponse(boolean flag, int code, String message) {
+  public ErrorInfo(boolean flag, int code, String message) {
     this.flag = flag;
     this.code = code;
     this.message = message;

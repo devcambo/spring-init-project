@@ -2,7 +2,7 @@ package com.devcambo.springinit.controller;
 
 import com.devcambo.springinit.constant.StatusCode;
 import com.devcambo.springinit.model.base.APIResponse;
-import com.devcambo.springinit.model.base.ErrorResponse;
+import com.devcambo.springinit.model.base.ErrorInfo;
 import com.devcambo.springinit.model.dto.request.UserCreationDto;
 import com.devcambo.springinit.model.dto.request.UserUpdateDto;
 import com.devcambo.springinit.service.UserService;
@@ -55,7 +55,7 @@ public class UserController {
         description = "Invalid request parameters",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
       @ApiResponse(
@@ -63,7 +63,7 @@ public class UserController {
         description = "Unauthorized",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
       @ApiResponse(
@@ -71,7 +71,7 @@ public class UserController {
         description = "Forbidden",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
       @ApiResponse(
@@ -79,7 +79,7 @@ public class UserController {
         description = "HTTP Status Internal Server Error",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
     }
@@ -143,7 +143,7 @@ public class UserController {
         description = "Invalid request parameters",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
       @ApiResponse(
@@ -151,7 +151,7 @@ public class UserController {
         description = "Unauthorized",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
       @ApiResponse(
@@ -159,7 +159,7 @@ public class UserController {
         description = "Forbidden",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
       @ApiResponse(
@@ -167,7 +167,7 @@ public class UserController {
         description = "User not found",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
       @ApiResponse(
@@ -175,7 +175,7 @@ public class UserController {
         description = "HTTP Status Internal Server Error",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
     }
@@ -183,11 +183,11 @@ public class UserController {
   @GetMapping("/{userId}")
   public ResponseEntity<APIResponse> findUserById(@PathVariable Long userId) {
     return ResponseEntity
-      .status(HttpStatus.OK)
+      .status(HttpStatus.FOUND)
       .body(
         new APIResponse(
           true,
-          StatusCode.OK,
+          StatusCode.FOUND,
           "Retrieved user successfully",
           userService.readById(userId)
         )
@@ -213,7 +213,7 @@ public class UserController {
         description = "Invalid request parameters",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
       @ApiResponse(
@@ -221,7 +221,7 @@ public class UserController {
         description = "Unauthorized",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
       @ApiResponse(
@@ -229,7 +229,7 @@ public class UserController {
         description = "Forbidden",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
       @ApiResponse(
@@ -237,7 +237,7 @@ public class UserController {
         description = "HTTP Status Internal Server Error",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
     }
@@ -277,7 +277,7 @@ public class UserController {
         description = "Invalid request parameters",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
       @ApiResponse(
@@ -285,7 +285,7 @@ public class UserController {
         description = "Unauthorized",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
       @ApiResponse(
@@ -293,7 +293,7 @@ public class UserController {
         description = "Forbidden",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
       @ApiResponse(
@@ -301,7 +301,7 @@ public class UserController {
         description = "User not found",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
       @ApiResponse(
@@ -309,7 +309,7 @@ public class UserController {
         description = "HTTP Status Internal Server Error",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
     }
@@ -350,7 +350,7 @@ public class UserController {
         description = "Unauthorized",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
       @ApiResponse(
@@ -358,7 +358,7 @@ public class UserController {
         description = "Forbidden",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
       @ApiResponse(
@@ -366,7 +366,7 @@ public class UserController {
         description = "User not found",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
       @ApiResponse(
@@ -374,7 +374,7 @@ public class UserController {
         description = "HTTP Status Internal Server Error",
         content = @Content(
           mediaType = "application/json",
-          schema = @Schema(implementation = ErrorResponse.class)
+          schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
     }
@@ -383,7 +383,7 @@ public class UserController {
   public ResponseEntity<APIResponse> deleteUser(@PathVariable Long userId) {
     userService.delete(userId);
     return ResponseEntity
-      .status(HttpStatus.OK)
-      .body(new APIResponse(true, StatusCode.OK, "User deleted successfully"));
+      .status(HttpStatus.NO_CONTENT)
+      .body(new APIResponse(true, StatusCode.NO_CONTENT, "User deleted successfully"));
   }
 }
