@@ -9,11 +9,17 @@ import jakarta.validation.constraints.NotNull;
 
 @Schema(name = "UserCreationDto", description = "User creation request schema")
 public record UserCreationDto(
+  @NotEmpty(message = "Username is required!")
+  @Schema(description = "Username", example = "johndoe")
+  String username,
   @NotEmpty(message = "Email is required!")
   @Email(message = "Invalid email address!")
   @UniqueEmail
   @Schema(description = "Email address", example = "example@example.com")
   String email,
+  @NotEmpty(message = "Password is required!")
+  @Schema(description = "Password", example = "password123")
+  String password,
   @NotNull(message = "Gender is required!")
   @Schema(
     description = "Gender",
