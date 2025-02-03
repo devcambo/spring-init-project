@@ -45,11 +45,31 @@ class UserServiceImplTest {
 
   List<User> users;
 
-  User example;
+  User userExample;
+
+  UserCreationDto userCreationDtoExample;
+
+  UserUpdateDto userUpdateDtoExample;
+
+  UserResponseDto userResponseDtoExample;
+
+  Long userId;
 
   @BeforeEach
   void setUp() {
-    example = new User(3L, "Example", "example@example.com", "password", Gender.MALE);
+    userExample = new User(3L, "Example", "example@example.com", "password", Gender.MALE);
+    userId = userExample.getUserId();
+    userCreationDtoExample =
+      new UserCreationDto(
+        "Create Example",
+        "create@example.com",
+        "createPassword",
+        Gender.MALE
+      );
+    userUpdateDtoExample =
+      new UserUpdateDto("Update Example", "update@example.com", Gender.MALE);
+    userResponseDtoExample =
+      new UserResponseDto(3L, "Response Example", "response@example.com", Gender.MALE);
     User u1 = new User(1L, "John Doe", "7sCm6@example.com", "password", Gender.MALE);
     User u2 = new User(2L, "Kate Jones", "oUw0X@example.com", "password", Gender.FEMALE);
     users = Arrays.asList(u1, u2);
@@ -107,18 +127,17 @@ class UserServiceImplTest {
   @Test
   void testReadByIdSuccess() {
     // Given
-    Long userId = 3L;
-    given(userRepository.findById(userId)).willReturn(Optional.of(example));
+    given(userRepository.findById(userId)).willReturn(Optional.of(userExample));
 
     // When
     UserResponseDto result = userServiceImpl.readById(userId);
 
     // Then
     assertNotNull(result);
-    assertThat(result.userId()).isEqualTo(example.getUserId());
-    assertThat(result.username()).isEqualTo(example.getUsername());
-    assertThat(result.email()).isEqualTo(example.getEmail());
-    assertThat(result.gender()).isEqualTo(example.getGender());
+    assertThat(result.userId()).isEqualTo(userExample.getUserId());
+    assertThat(result.username()).isEqualTo(userExample.getUsername());
+    assertThat(result.email()).isEqualTo(userExample.getEmail());
+    assertThat(result.gender()).isEqualTo(userExample.getGender());
 
     // Verify
     verify(userRepository, times(1)).findById(userId);
@@ -130,85 +149,59 @@ class UserServiceImplTest {
     given(userRepository.findById(Mockito.any(Long.class))).willReturn(Optional.empty());
 
     // When
-    Throwable exception = catchThrowable(() -> userServiceImpl.readById(3L));
+    Throwable exception = catchThrowable(() -> userServiceImpl.readById(userId));
 
     // Then
     assertNotNull(exception);
     assertThat(exception)
       .isInstanceOf(ResourceNotFoundException.class)
-      .hasMessage("Resource {{ user }} not found with id {{ 3 }}");
+      .hasMessage(
+        String.format("Resource {{ user }} not found with id {{ %d }}", userId)
+      );
 
     // Verify
-    verify(userRepository, times(1)).findById(3L);
+    verify(userRepository, times(1)).findById(userId);
   }
 
   @Test
   void testCreateSuccess() {
     // Given
-    UserCreationDto userCreationDto = new UserCreationDto(
-      "John Doe",
-      "7sCm6@example.com",
-      "password",
-      Gender.MALE
-    );
-    User user = new User(1L, "John Doe", "7sCm6@example.com", "password", Gender.MALE);
-    UserResponseDto userResponseDto = new UserResponseDto(
-      1L,
-      "John Doe",
-      "7sCm6@example.com",
-      Gender.MALE
-    );
-
-    given(userMapperImpl.toEntity(userCreationDto)).willReturn(user);
-    given(userRepository.save(user)).willReturn(user);
-    given(userMapperImpl.toDto(user)).willReturn(userResponseDto);
+    given(userMapperImpl.toEntity(userCreationDtoExample)).willReturn(userExample);
+    given(userRepository.save(userExample)).willReturn(userExample);
+    given(userMapperImpl.toDto(userExample)).willReturn(userResponseDtoExample);
 
     // When
-    UserResponseDto result = userServiceImpl.create(userCreationDto);
+    UserResponseDto result = userServiceImpl.create(userCreationDtoExample);
 
     // Then
     assertNotNull(result);
-    assertEquals(userResponseDto, result);
+    assertEquals(userResponseDtoExample, result);
 
     // Verify
-    verify(userMapperImpl, times(1)).toEntity(userCreationDto);
-    verify(userRepository, times(1)).save(user);
-    verify(userMapperImpl, times(1)).toDto(user);
+    verify(userMapperImpl, times(1)).toEntity(userCreationDtoExample);
+    verify(userRepository, times(1)).save(userExample);
+    verify(userMapperImpl, times(1)).toDto(userExample);
   }
 
   @Test
   public void testUpdateSuccess() {
     // Given
-    Long userId = 1L;
-    User existingUser = new User();
-    existingUser.setUserId(userId);
-    existingUser.setUsername("johnDoe");
-    existingUser.setEmail("johndoe@example.com");
-    existingUser.setPassword("password123");
-    existingUser.setGender(Gender.MALE);
-
-    UserUpdateDto userUpdateDto = new UserUpdateDto(
-      "janeDoe",
-      "janedoe@example.com",
-      Gender.FEMALE
-    );
-
-    given(userRepository.findById(userId)).willReturn(Optional.of(existingUser));
-    given(userRepository.save(existingUser)).willReturn(existingUser);
+    given(userRepository.findById(userId)).willReturn(Optional.of(userExample));
+    given(userRepository.save(userExample)).willReturn(userExample);
 
     // When
-    UserResponseDto updatedUser = userServiceImpl.update(userId, userUpdateDto);
+    UserResponseDto updatedUser = userServiceImpl.update(userId, userUpdateDtoExample);
 
     // Then
     assertNotNull(updatedUser);
     assertEquals(userId, updatedUser.userId());
-    assertEquals("janeDoe", updatedUser.username());
-    assertEquals("janedoe@example.com", updatedUser.email());
-    assertEquals(Gender.FEMALE, updatedUser.gender());
+    assertEquals(userUpdateDtoExample.username(), updatedUser.username());
+    assertEquals(userUpdateDtoExample.email(), updatedUser.email());
+    assertEquals(userUpdateDtoExample.gender(), updatedUser.gender());
 
     // Verify
     verify(userRepository, times(1)).findById(userId);
-    verify(userRepository, times(1)).save(existingUser);
+    verify(userRepository, times(1)).save(userExample);
   }
 
   @Test
@@ -218,13 +211,15 @@ class UserServiceImplTest {
 
     // When
     Throwable throwable = catchThrowable(() ->
-      userServiceImpl.update(3L, Mockito.any(UserUpdateDto.class))
+      userServiceImpl.update(userId, Mockito.any(UserUpdateDto.class))
     );
 
     // Then
     assertThat(throwable)
       .isInstanceOf(ResourceNotFoundException.class)
-      .hasMessage("Resource {{ user }} not found with id {{ 3 }}");
+      .hasMessage(
+        String.format("Resource {{ user }} not found with id {{ %d }}", userId)
+      );
 
     // Verify
     verify(userRepository, times(1)).findById(3L);
@@ -233,8 +228,7 @@ class UserServiceImplTest {
   @Test
   void testDeleteSuccess() {
     // Given
-    Long userId = 3L;
-    given(userRepository.findById(userId)).willReturn(Optional.of(example));
+    given(userRepository.findById(userId)).willReturn(Optional.of(userExample));
     doNothing().when(userRepository).deleteById(userId);
 
     // When
@@ -250,15 +244,17 @@ class UserServiceImplTest {
     given(userRepository.findById(Mockito.any(Long.class))).willReturn(Optional.empty());
 
     // When
-    Throwable exception = catchThrowable(() -> userServiceImpl.delete(3L));
+    Throwable exception = catchThrowable(() -> userServiceImpl.delete(userId));
 
     // Then
     assertNotNull(exception);
     assertThat(exception)
       .isInstanceOf(ResourceNotFoundException.class)
-      .hasMessage("Resource {{ user }} not found with id {{ 3 }}");
+      .hasMessage(
+        String.format("Resource {{ user }} not found with id {{ %d }}", userId)
+      );
 
     // Verify
-    verify(userRepository, times(1)).findById(3L);
+    verify(userRepository, times(1)).findById(userId);
   }
 }

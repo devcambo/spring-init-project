@@ -44,8 +44,33 @@ class UserControllerTest {
   @MockitoBean
   private UserService userService;
 
+  UserCreationDto userCreationDtoExample;
+
+  UserUpdateDto userUpdateDtoExample;
+
+  UserResponseDto userResponseDtoExample;
+
+  UserResponseDto userResponseDtoExample2;
+
+  Long userId;
+
   @BeforeEach
-  void setUp() {}
+  void setUp() {
+    userCreationDtoExample =
+      new UserCreationDto(
+        "Create Example",
+        "create@example.com",
+        "createPassword",
+        Gender.MALE
+      );
+    userUpdateDtoExample =
+      new UserUpdateDto("Update Example", "update@example.com", Gender.MALE);
+    userResponseDtoExample =
+      new UserResponseDto(3L, "Response Example", "response@example.com", Gender.MALE);
+    userResponseDtoExample2 =
+      new UserResponseDto(4L, "Response Example 2", "response2@example.com", Gender.MALE);
+    userId = userResponseDtoExample.userId();
+  }
 
   @AfterEach
   void tearDown() {}
@@ -53,19 +78,10 @@ class UserControllerTest {
   @Test
   void testFindAllUsersSuccess() throws Exception {
     // Given
-    UserResponseDto u1 = new UserResponseDto(
-      1L,
-      "Albus Dumbledore",
-      "7sCm6@example.com",
-      Gender.MALE
+    List<UserResponseDto> users = Arrays.asList(
+      userResponseDtoExample,
+      userResponseDtoExample2
     );
-    UserResponseDto u2 = new UserResponseDto(
-      2L,
-      "Harry Potter",
-      "7sCm6@example.com",
-      Gender.MALE
-    );
-    List<UserResponseDto> users = Arrays.asList(u1, u2);
     Page<UserResponseDto> usersPage = new PageImpl<>(users);
     given(userService.readAll(0, 10, "userId", "ASC")).willReturn(usersPage);
 
@@ -74,14 +90,32 @@ class UserControllerTest {
       .andExpect(jsonPath("$.flag").value(true))
       .andExpect(jsonPath("$.code").value(StatusCode.OK))
       .andExpect(jsonPath("$.message").value("Retrieved all users successfully"))
-      .andExpect(jsonPath("$.data.content[0].userId").value(u1.userId()))
-      .andExpect(jsonPath("$.data.content[0].username").value(u1.username()))
-      .andExpect(jsonPath("$.data.content[0].email").value(u1.email()))
-      .andExpect(jsonPath("$.data.content[0].gender").value(u1.gender().toString()))
-      .andExpect(jsonPath("$.data.content[1].userId").value(u2.userId()))
-      .andExpect(jsonPath("$.data.content[1].username").value(u2.username()))
-      .andExpect(jsonPath("$.data.content[1].email").value(u2.email()))
-      .andExpect(jsonPath("$.data.content[1].gender").value(u2.gender().toString()))
+      .andExpect(
+        jsonPath("$.data.content[0].userId").value(userResponseDtoExample.userId())
+      )
+      .andExpect(
+        jsonPath("$.data.content[0].username").value(userResponseDtoExample.username())
+      )
+      .andExpect(
+        jsonPath("$.data.content[0].email").value(userResponseDtoExample.email())
+      )
+      .andExpect(
+        jsonPath("$.data.content[0].gender")
+          .value(userResponseDtoExample.gender().toString())
+      )
+      .andExpect(
+        jsonPath("$.data.content[1].userId").value(userResponseDtoExample2.userId())
+      )
+      .andExpect(
+        jsonPath("$.data.content[1].username").value(userResponseDtoExample2.username())
+      )
+      .andExpect(
+        jsonPath("$.data.content[1].email").value(userResponseDtoExample2.email())
+      )
+      .andExpect(
+        jsonPath("$.data.content[1].gender")
+          .value(userResponseDtoExample2.gender().toString())
+      )
       .andExpect(jsonPath("$.data.page.totalPages").value(1))
       .andExpect(jsonPath("$.data.page.totalElements").value(2))
       .andExpect(jsonPath("$.data.page.number").value(0))
@@ -116,35 +150,31 @@ class UserControllerTest {
   @Test
   void testFindUserByIdSuccess() throws Exception {
     // Given
-    UserResponseDto user = new UserResponseDto(
-      1L,
-      "Albus Dumbledore",
-      "7sCm6@example.com",
-      Gender.MALE
-    );
-    given(userService.readById(1L)).willReturn(user);
+    given(userService.readById(userId)).willReturn(userResponseDtoExample);
 
     // When and then
-    this.mockMvc.perform(get("/api/users/1").accept(MediaType.APPLICATION_JSON))
+    this.mockMvc.perform(get("/api/users/" + userId).accept(MediaType.APPLICATION_JSON))
       .andExpect(jsonPath("$.flag").value(true))
       .andExpect(jsonPath("$.code").value(StatusCode.FOUND))
       .andExpect(jsonPath("$.message").value("Retrieved user successfully"))
-      .andExpect(jsonPath("$.data.userId").value(user.userId()))
-      .andExpect(jsonPath("$.data.username").value(user.username()))
-      .andExpect(jsonPath("$.data.email").value(user.email()));
+      .andExpect(jsonPath("$.data.userId").value(userResponseDtoExample.userId()))
+      .andExpect(jsonPath("$.data.username").value(userResponseDtoExample.username()))
+      .andExpect(jsonPath("$.data.email").value(userResponseDtoExample.email()));
   }
 
   @Test
   void testFindUserByIdNotFound() throws Exception {
     // Given
-    given(userService.readById(1L)).willThrow(new ResourceNotFoundException("user", 1L));
+    given(userService.readById(Mockito.any(Long.class)))
+      .willThrow(new ResourceNotFoundException("user", userId));
 
     // When and then
-    this.mockMvc.perform(get("/api/users/1").accept(MediaType.APPLICATION_JSON))
+    this.mockMvc.perform(get("/api/users/" + userId).accept(MediaType.APPLICATION_JSON))
       .andExpect(jsonPath("$.flag").value(false))
       .andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
       .andExpect(
-        jsonPath("$.message").value("Resource {{ user }} not found with id {{ 1 }}")
+        jsonPath("$.message")
+          .value(String.format("Resource {{ user }} not found with id {{ %d }}", userId))
       )
       .andExpect(jsonPath("$.data").doesNotExist());
   }
@@ -152,86 +182,60 @@ class UserControllerTest {
   @Test
   void testCreateUserSuccess() throws Exception {
     // Given
-    UserCreationDto userCreationDto = new UserCreationDto(
-      "John Doe",
-      "7sCm6@example.com",
-      "password",
-      Gender.MALE
-    );
-    UserResponseDto userResponseDto = new UserResponseDto(
-      1L,
-      "John Doe",
-      "7sCm6@example.com",
-      Gender.MALE
-    );
     given(userService.create(Mockito.any(UserCreationDto.class)))
-      .willReturn(userResponseDto);
+      .willReturn(userResponseDtoExample);
 
     // When and then
     this.mockMvc.perform(
         post("/api/users")
           .contentType(MediaType.APPLICATION_JSON)
-          .content(objectMapper.writeValueAsString(userCreationDto))
+          .content(objectMapper.writeValueAsString(userCreationDtoExample))
       )
       .andExpect(jsonPath("$.flag").value(true))
       .andExpect(jsonPath("$.code").value(StatusCode.CREATED))
       .andExpect(jsonPath("$.message").value("User created successfully"))
-      .andExpect(jsonPath("$.data.userId").value(userResponseDto.userId()))
-      .andExpect(jsonPath("$.data.username").value(userResponseDto.username()))
-      .andExpect(jsonPath("$.data.email").value(userResponseDto.email()));
+      .andExpect(jsonPath("$.data.userId").value(userResponseDtoExample.userId()))
+      .andExpect(jsonPath("$.data.username").value(userResponseDtoExample.username()))
+      .andExpect(jsonPath("$.data.email").value(userResponseDtoExample.email()));
   }
 
   @Test
   void testUpdateUserSuccess() throws Exception {
     // Given
-    UserUpdateDto userUpdateDto = new UserUpdateDto(
-      "John Doe",
-      "7sCm6@example.com",
-      Gender.MALE
-    );
-    UserResponseDto userResponseDto = new UserResponseDto(
-      1L,
-      "John Doe",
-      "7sCm6@example.com",
-      Gender.MALE
-    );
-    given(userService.update(1L, userUpdateDto)).willReturn(userResponseDto);
+    given(userService.update(userId, userUpdateDtoExample))
+      .willReturn(userResponseDtoExample);
 
     // When and then
     this.mockMvc.perform(
-        put("/api/users/1")
+        put("/api/users/" + userId)
           .contentType(MediaType.APPLICATION_JSON)
-          .content(objectMapper.writeValueAsString(userUpdateDto))
+          .content(objectMapper.writeValueAsString(userUpdateDtoExample))
       )
       .andExpect(jsonPath("$.flag").value(true))
       .andExpect(jsonPath("$.code").value(StatusCode.OK))
       .andExpect(jsonPath("$.message").value("User updated successfully"))
-      .andExpect(jsonPath("$.data.userId").value(userResponseDto.userId()))
-      .andExpect(jsonPath("$.data.username").value(userResponseDto.username()))
-      .andExpect(jsonPath("$.data.email").value(userResponseDto.email()));
+      .andExpect(jsonPath("$.data.userId").value(userResponseDtoExample.userId()))
+      .andExpect(jsonPath("$.data.username").value(userResponseDtoExample.username()))
+      .andExpect(jsonPath("$.data.email").value(userResponseDtoExample.email()));
   }
 
   @Test
   void testUpdateUserNotFound() throws Exception {
     // Given
-    UserUpdateDto userUpdateDto = new UserUpdateDto(
-      "John Doe",
-      "7sCm6@example.com",
-      Gender.MALE
-    );
-    given(userService.update(1L, userUpdateDto))
-      .willThrow(new ResourceNotFoundException("user", 1L));
+    given(userService.update(userId, userUpdateDtoExample))
+      .willThrow(new ResourceNotFoundException("user", userId));
 
     // When and then
     this.mockMvc.perform(
-        put("/api/users/1")
+        put("/api/users/" + userId)
           .contentType(MediaType.APPLICATION_JSON)
-          .content(objectMapper.writeValueAsString(userUpdateDto))
+          .content(objectMapper.writeValueAsString(userUpdateDtoExample))
       )
       .andExpect(jsonPath("$.flag").value(false))
       .andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
       .andExpect(
-        jsonPath("$.message").value("Resource {{ user }} not found with id {{ 1 }}")
+        jsonPath("$.message")
+          .value(String.format("Resource {{ user }} not found with id {{ %d }}", userId))
       )
       .andExpect(jsonPath("$.data").doesNotExist());
   }
@@ -239,11 +243,12 @@ class UserControllerTest {
   @Test
   void testDeleteUserSuccess() throws Exception {
     // Given
-    Long userId = 1L;
     doNothing().when(userService).delete(userId);
 
     // When and then
-    this.mockMvc.perform(delete("/api/users/1").accept(MediaType.APPLICATION_JSON))
+    this.mockMvc.perform(
+        delete("/api/users/" + userId).accept(MediaType.APPLICATION_JSON)
+      )
       .andExpect(jsonPath("$.flag").value(true))
       .andExpect(jsonPath("$.code").value(StatusCode.NO_CONTENT))
       .andExpect(jsonPath("$.message").value("User deleted successfully"))
@@ -253,15 +258,19 @@ class UserControllerTest {
   @Test
   void testDeleteUserNotFound() throws Exception {
     // Given
-    Long userId = 1L;
-    doThrow(new ResourceNotFoundException("user", 1L)).when(userService).delete(userId);
+    doThrow(new ResourceNotFoundException("user", userId))
+      .when(userService)
+      .delete(userId);
 
     // When and then
-    this.mockMvc.perform(delete("/api/users/1").accept(MediaType.APPLICATION_JSON))
+    this.mockMvc.perform(
+        delete("/api/users/" + userId).accept(MediaType.APPLICATION_JSON)
+      )
       .andExpect(jsonPath("$.flag").value(false))
       .andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
       .andExpect(
-        jsonPath("$.message").value("Resource {{ user }} not found with id {{ 1 }}")
+        jsonPath("$.message")
+          .value(String.format("Resource {{ user }} not found with id {{ %d }}", userId))
       )
       .andExpect(jsonPath("$.data").doesNotExist());
   }
