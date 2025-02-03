@@ -21,6 +21,57 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+  // ===================================== 400 Exceptions =====================================
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  ErrorInfo handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+    List<ObjectError> errors = ex.getBindingResult().getAllErrors();
+    Map<String, String> errorDetails = new HashMap<>(errors.size());
+    errors.forEach(error -> {
+      String fieldName = ((FieldError) error).getField();
+      String errorMessage = error.getDefaultMessage();
+      errorDetails.put(fieldName, errorMessage);
+    });
+    return new ErrorInfo(
+      false,
+      StatusCode.BAD_REQUEST,
+      "Invalid request parameters or body",
+      errorDetails
+    );
+  }
+
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  ErrorInfo handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+    String errorDetails = "";
+    if (ex.getCause() instanceof InvalidFormatException ifx) {
+      if (ifx.getTargetType() != null && ifx.getTargetType().isEnum()) {
+        errorDetails =
+          String.format(
+            "Invalid enum value: {{ %s }} for the field: {{ %s }}. The value must be one of: {{ %s }}",
+            ifx.getValue(),
+            ifx.getPath().get(ifx.getPath().size() - 1).getFieldName(),
+            Arrays.toString(ifx.getTargetType().getEnumConstants())
+          );
+      }
+    }
+    return new ErrorInfo(
+      false,
+      StatusCode.BAD_REQUEST,
+      "Invalid request parameters or body",
+      errorDetails
+    );
+  }
+
+  @ExceptionHandler(InvalidSortFieldException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  ErrorInfo handleInvalidSortFieldException(InvalidSortFieldException ex) {
+    return new ErrorInfo(false, StatusCode.BAD_REQUEST, ex.getMessage());
+  }
+
+  // ===================================== 401 Exceptions =====================================
+  // ===================================== 403 Exceptions =====================================
+  // ===================================== 404 Exceptions =====================================
   @ExceptionHandler(ResourceNotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
   ErrorInfo handleResourceNotFoundException(ResourceNotFoundException ex) {
@@ -38,6 +89,7 @@ public class GlobalExceptionHandler {
     );
   }
 
+  // ===================================== 405 Exceptions =====================================
   @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
   @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
   ErrorInfo handleHttpRequestMethodNotSupportedException(
@@ -46,81 +98,24 @@ public class GlobalExceptionHandler {
     return new ErrorInfo(
       false,
       StatusCode.METHOD_NOT_ALLOWED,
-      "This method is not allowed for this API endpoint",
+      "This http method is not allowed for this API endpoint",
       ex.getMessage()
     );
   }
 
-  @ExceptionHandler(
-    {
-      MethodArgumentNotValidException.class,
-      HttpMessageNotReadableException.class,
-      InvalidSortFieldException.class,
-    }
-  )
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  ErrorInfo handleBadRequestException(Exception ex) {
-    if (ex instanceof MethodArgumentNotValidException invalidArgumentException) {
-      List<ObjectError> errors = invalidArgumentException
-        .getBindingResult()
-        .getAllErrors();
-      Map<String, String> errorMap = new HashMap<>(errors.size());
-      errors.forEach(error -> {
-        String fieldName = ((FieldError) error).getField();
-        String errorMessage = error.getDefaultMessage();
-        errorMap.put(fieldName, errorMessage);
-      });
-      return new ErrorInfo(
-        false,
-        StatusCode.BAD_REQUEST,
-        "Invalid request parameters",
-        errorMap
-      );
-    } else if (ex instanceof HttpMessageNotReadableException readException) {
-      String errorDetails = getErrorDetailsOfHttpMessageNotReadableException(
-        readException
-      );
-      return new ErrorInfo(
-        false,
-        StatusCode.BAD_REQUEST,
-        "Invalid request parameters",
-        errorDetails
-      );
-    } else {
-      return new ErrorInfo(false, StatusCode.BAD_REQUEST, ex.getMessage());
-    }
-  }
-
+  // ===================================== 409 Exceptions =====================================
+  // ===================================== 500 Exceptions =====================================
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   ErrorInfo handleOtherException(Exception ex) {
     return new ErrorInfo(
       false,
       StatusCode.INTERNAL_SERVER_ERROR,
-      "Something went wrong",
+      "An internal server error has occurred",
       ex.getMessage()
     );
   }
-
-  private String getErrorDetailsOfHttpMessageNotReadableException(
-    HttpMessageNotReadableException ex
-  ) {
-    if (ex.getCause() instanceof InvalidFormatException formatException) {
-      if (
-        formatException.getTargetType() != null &&
-        formatException.getTargetType().isEnum()
-      ) {
-        return String.format(
-          "Invalid enum value {{ %s }} for the field {{ %s }}. The value must be one of this enum values: {{ %s }} ",
-          formatException.getValue(),
-          formatException
-            .getPath()
-            .get(formatException.getPath().size() - 1)
-            .getFieldName(),
-          Arrays.toString(formatException.getTargetType().getEnumConstants())
-        );
-      }
-    }
-    return "";
-  }
+  // ===================================== 502 Exceptions =====================================
+  // ===================================== 503 Exceptions =====================================
+  // ===================================== 504 Exceptions =====================================
 }
