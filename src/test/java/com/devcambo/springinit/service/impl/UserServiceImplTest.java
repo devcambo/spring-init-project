@@ -45,8 +45,11 @@ class UserServiceImplTest {
 
   List<User> users;
 
+  User example;
+
   @BeforeEach
   void setUp() {
+    example = new User(3L, "Example", "example@example.com", "password", Gender.MALE);
     User u1 = new User(1L, "John Doe", "7sCm6@example.com", "password", Gender.MALE);
     User u2 = new User(2L, "Kate Jones", "oUw0X@example.com", "password", Gender.FEMALE);
     users = Arrays.asList(u1, u2);
@@ -104,19 +107,18 @@ class UserServiceImplTest {
   @Test
   void testReadByIdSuccess() {
     // Given
-    Long userId = 1L;
-    User user = new User(1L, "John Doe", "7sCm6@example.com", "password", Gender.MALE);
-    given(userRepository.findById(userId)).willReturn(Optional.of(user));
+    Long userId = 3L;
+    given(userRepository.findById(userId)).willReturn(Optional.of(example));
 
     // When
     UserResponseDto result = userServiceImpl.readById(userId);
 
     // Then
     assertNotNull(result);
-    assertThat(result.userId()).isEqualTo(user.getUserId());
-    assertThat(result.username()).isEqualTo(user.getUsername());
-    assertThat(result.email()).isEqualTo(user.getEmail());
-    assertThat(result.gender()).isEqualTo(user.getGender());
+    assertThat(result.userId()).isEqualTo(example.getUserId());
+    assertThat(result.username()).isEqualTo(example.getUsername());
+    assertThat(result.email()).isEqualTo(example.getEmail());
+    assertThat(result.gender()).isEqualTo(example.getGender());
 
     // Verify
     verify(userRepository, times(1)).findById(userId);
@@ -128,16 +130,16 @@ class UserServiceImplTest {
     given(userRepository.findById(Mockito.any(Long.class))).willReturn(Optional.empty());
 
     // When
-    Throwable exception = catchThrowable(() -> userServiceImpl.readById(1L));
+    Throwable exception = catchThrowable(() -> userServiceImpl.readById(3L));
 
     // Then
     assertNotNull(exception);
     assertThat(exception)
       .isInstanceOf(ResourceNotFoundException.class)
-      .hasMessage("Resource {{ user }} not found with id {{ 1 }}");
+      .hasMessage("Resource {{ user }} not found with id {{ 3 }}");
 
     // Verify
-    verify(userRepository, times(1)).findById(1L);
+    verify(userRepository, times(1)).findById(3L);
   }
 
   @Test
@@ -212,34 +214,27 @@ class UserServiceImplTest {
   @Test
   public void testUpdateNotFound() {
     // Given
-    Long userId = 1L;
-    UserUpdateDto userUpdateDto = new UserUpdateDto(
-      "janeDoe",
-      "janedoe@example.com",
-      Gender.FEMALE
-    );
-    given(userRepository.findById(userId)).willReturn(Optional.empty());
+    given(userRepository.findById(Mockito.any(Long.class))).willReturn(Optional.empty());
 
     // When
     Throwable throwable = catchThrowable(() ->
-      userServiceImpl.update(userId, userUpdateDto)
+      userServiceImpl.update(3L, Mockito.any(UserUpdateDto.class))
     );
 
     // Then
     assertThat(throwable)
       .isInstanceOf(ResourceNotFoundException.class)
-      .hasMessage("Resource {{ user }} not found with id {{ 1 }}");
+      .hasMessage("Resource {{ user }} not found with id {{ 3 }}");
 
     // Verify
-    verify(userRepository, times(1)).findById(userId);
+    verify(userRepository, times(1)).findById(3L);
   }
 
   @Test
   void testDeleteSuccess() {
     // Given
-    Long userId = 1L;
-    User user = new User(1L, "John Doe", "7sCm6@example.com", "password", Gender.MALE);
-    given(userRepository.findById(userId)).willReturn(Optional.of(user));
+    Long userId = 3L;
+    given(userRepository.findById(userId)).willReturn(Optional.of(example));
     doNothing().when(userRepository).deleteById(userId);
 
     // When
@@ -252,19 +247,18 @@ class UserServiceImplTest {
   @Test
   void testDeleteNotFound() {
     // Given
-    Long userId = 1L;
-    given(userRepository.findById(userId)).willReturn(Optional.empty());
+    given(userRepository.findById(Mockito.any(Long.class))).willReturn(Optional.empty());
 
     // When
-    Throwable exception = catchThrowable(() -> userServiceImpl.delete(userId));
+    Throwable exception = catchThrowable(() -> userServiceImpl.delete(3L));
 
     // Then
     assertNotNull(exception);
     assertThat(exception)
       .isInstanceOf(ResourceNotFoundException.class)
-      .hasMessage("Resource {{ user }} not found with id {{ 1 }}");
+      .hasMessage("Resource {{ user }} not found with id {{ 3 }}");
 
     // Verify
-    verify(userRepository, times(1)).findById(userId);
+    verify(userRepository, times(1)).findById(3L);
   }
 }
