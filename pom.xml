@@ -158,7 +158,7 @@
 			</activation>
 			<properties>
 				<!-- But in our CI environment we want to validate that code is formatted -->
-				<plugin.prettier.goal>check</plugin.prettier.goal>
+				<plugin.prettier.goal>write</plugin.prettier.goal>
 			</properties>
 		</profile>
 	</profiles>
