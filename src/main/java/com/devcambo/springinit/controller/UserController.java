@@ -52,7 +52,7 @@ public class UserController {
       ),
       @ApiResponse(
         responseCode = "400",
-        description = "Invalid request parameters",
+        description = "Invalid request parameters or body",
         content = @Content(
           mediaType = "application/json",
           schema = @Schema(implementation = ErrorInfo.class)
@@ -74,6 +74,14 @@ public class UserController {
           schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
+            @ApiResponse(
+                    responseCode = "405",
+                    description = "This http method is not allowed for this API endpoint",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorInfo.class)
+                    )
+            ),
       @ApiResponse(
         responseCode = "500",
         description = "HTTP Status Internal Server Error",
@@ -140,7 +148,7 @@ public class UserController {
       ),
       @ApiResponse(
         responseCode = "400",
-        description = "Invalid request parameters",
+        description = "Invalid request parameters or body",
         content = @Content(
           mediaType = "application/json",
           schema = @Schema(implementation = ErrorInfo.class)
@@ -170,7 +178,15 @@ public class UserController {
           schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
-      @ApiResponse(
+            @ApiResponse(
+                    responseCode = "405",
+                    description = "This http method is not allowed for this API endpoint",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorInfo.class)
+                    )
+            ),
+            @ApiResponse(
         responseCode = "500",
         description = "HTTP Status Internal Server Error",
         content = @Content(
@@ -210,7 +226,7 @@ public class UserController {
       ),
       @ApiResponse(
         responseCode = "400",
-        description = "Invalid request parameters",
+        description = "Invalid request parameters or body",
         content = @Content(
           mediaType = "application/json",
           schema = @Schema(implementation = ErrorInfo.class)
@@ -231,8 +247,17 @@ public class UserController {
           mediaType = "application/json",
           schema = @Schema(implementation = ErrorInfo.class)
         )
-      ),
-      @ApiResponse(
+      )
+            ,
+            @ApiResponse(
+                    responseCode = "405",
+                    description = "This http method is not allowed for this API endpoint",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorInfo.class)
+                    )
+            ),
+            @ApiResponse(
         responseCode = "500",
         description = "HTTP Status Internal Server Error",
         content = @Content(
@@ -274,7 +299,7 @@ public class UserController {
       ),
       @ApiResponse(
         responseCode = "400",
-        description = "Invalid request parameters",
+        description = "Invalid request parameters or body",
         content = @Content(
           mediaType = "application/json",
           schema = @Schema(implementation = ErrorInfo.class)
@@ -304,7 +329,15 @@ public class UserController {
           schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
-      @ApiResponse(
+            @ApiResponse(
+                    responseCode = "405",
+                    description = "This http method is not allowed for this API endpoint",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorInfo.class)
+                    )
+            ),
+            @ApiResponse(
         responseCode = "500",
         description = "HTTP Status Internal Server Error",
         content = @Content(
@@ -369,7 +402,15 @@ public class UserController {
           schema = @Schema(implementation = ErrorInfo.class)
         )
       ),
-      @ApiResponse(
+            @ApiResponse(
+                    responseCode = "405",
+                    description = "This http method is not allowed for this API endpoint",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorInfo.class)
+                    )
+            ),
+            @ApiResponse(
         responseCode = "500",
         description = "HTTP Status Internal Server Error",
         content = @Content(

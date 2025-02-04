@@ -68,7 +68,7 @@ class UserControllerTest {
     userResponseDtoExample =
       new UserResponseDto(3L, "Response Example", "response@example.com", Gender.MALE);
     userResponseDtoExample2 =
-      new UserResponseDto(4L, "Response Example 2", "response2@example.com", Gender.MALE);
+      new UserResponseDto(4L, "Response2 Example", "response2@example.com", Gender.MALE);
     userId = userResponseDtoExample.userId();
   }
 
