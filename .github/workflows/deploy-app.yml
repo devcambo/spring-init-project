@@ -1,19 +1,26 @@
-name: Deploy App to DigitalOcean
-
+name: Deploy Spring Boot to DigitalOcean
 on:
   push:
     branches: [main]
 
-permissions:
-  contents: read
-
 jobs:
-  deploy-app:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
-      - name: Deploy the app
-        uses: digitalocean/app_action/deploy@v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
         with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+          distribution: 'temurin'
+          java-version: '17'  # Match your Spring Boot Java version
+
+      - name: Build JAR with Maven
+        run: mvn clean package  # Use "./gradlew build" for Gradle
+
+      - name: Deploy to DigitalOcean
+        uses: digitalocean/app_action@v1.0.0
+        with:
+          api_token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+          app_spec_path: app.yaml
