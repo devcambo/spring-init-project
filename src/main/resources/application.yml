@@ -4,7 +4,7 @@ spring:
   application:
     name: "spring-init-default"
   profiles:
-    active: "prod"
+    active: "dev"
   web:
     resources:
       add-mappings: "false"

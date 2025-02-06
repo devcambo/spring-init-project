@@ -1,13 +1,15 @@
 server:
-  port: "8080"
+  port: 8080
 spring:
+  profiles:
+    active: dev
   application:
-    name: "spring-init-production"
+    name: spring-init-production
   datasource:
-    driver-class-name: "org.postgresql.Driver"
-    url: "jdbc:postgresql://localhost:5432/app_db"
-    username: "app_user"
-    password: "app_password"
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${JDBC_DATABASE_HOST}:${JDBC_DATABASE_PORT}/${JDBC_DATABASE_NAME}
+    username: ${JDBC_DATABASE_USERNAME}
+    password: ${JDBC_DATABASE_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: "none"
+      ddl-auto: create
