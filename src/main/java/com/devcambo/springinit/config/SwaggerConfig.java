@@ -25,7 +25,10 @@ import io.swagger.v3.oas.annotations.servers.Server;
   ),
   servers = {
     @Server(url = "http://localhost:8080", description = "Development server"),
-    @Server(url = "https://monkfish-app-a3pbe.ondigitalocean.app", description = "Staging server"),
+    @Server(
+      url = "https://monkfish-app-a3pbe.ondigitalocean.app",
+      description = "Staging server"
+    ),
     @Server(url = "https://example.com", description = "Production server"),
   }
 )
