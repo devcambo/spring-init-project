@@ -1,17 +1,14 @@
-version: "3.9"
+version: "3.8"
+
 services:
-  app_db:
-    image: "mysql:latest"
-    container_name: "app_mysql"
-    environment:
-      MYSQL_ROOT_PASSWORD: "root"
-      MYSQL_DATABASE: "app_db"
-      MYSQL_USER: "app_user"
-      MYSQL_PASSWORD: "app_password"
+  localstack:
+    container_name: "${LOCALSTACK_DOCKER_NAME:-localstack-main}"
+    image: localstack/localstack
     ports:
-      - "3306:3306"
+      - "127.0.0.1:4566:4566"
+    environment:
+      - DEBUG=1
     volumes:
-      - "app-db-data:/var/lib/mysql"
-    restart: "always"
-volumes:
-  app-db-data:
+      - "/path/to/init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh"  # ready hook
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
