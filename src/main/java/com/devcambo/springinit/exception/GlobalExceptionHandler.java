@@ -3,6 +3,7 @@ package com.devcambo.springinit.exception;
 import com.devcambo.springinit.constant.StatusCode;
 import com.devcambo.springinit.model.base.ErrorInfo;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import io.awspring.cloud.s3.S3Exception;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -105,6 +106,17 @@ public class GlobalExceptionHandler {
 
   // ===================================== 409 Exceptions =====================================
   // ===================================== 500 Exceptions =====================================
+  @ExceptionHandler(S3Exception.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  ErrorInfo handleS3Exception(S3Exception ex) {
+    return new ErrorInfo(
+      false,
+      StatusCode.INTERNAL_SERVER_ERROR,
+      ex.getMessage(),
+      ex.getCause().getMessage()
+    );
+  }
+
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   ErrorInfo handleOtherException(Exception ex) {

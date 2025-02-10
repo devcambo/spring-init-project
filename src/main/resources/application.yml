@@ -8,3 +8,16 @@ spring:
   web:
     resources:
       add-mappings: "false"
+  servlet:
+    multipart:
+      max-request-size: "10MB"
+      max-file-size: "5MB"
+# TODO: set up localstack for development
+  cloud:
+    aws:
+      credentials:
+        access-key: "${AWS_ACCESS_KEY}"
+        secret-key: "${AWS_SECRET_KEY}"
+      s3:
+        region: "${AWS_REGION}"
+        endpoint: "${AWS_ENDPOINT}"
