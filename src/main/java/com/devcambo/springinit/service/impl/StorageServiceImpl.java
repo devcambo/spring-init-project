@@ -1,5 +1,6 @@
 package com.devcambo.springinit.service.impl;
 
+import com.devcambo.springinit.constant.StorageConstant;
 import com.devcambo.springinit.exception.ResourceNotFoundException;
 import com.devcambo.springinit.service.StorageService;
 import io.awspring.cloud.s3.ObjectMetadata;
@@ -22,9 +23,6 @@ public class StorageServiceImpl implements StorageService {
 
   private final S3Template s3Template;
 
-  // TODO: move to properties
-  private static final String BUCKET_NAME = "dev-testing-space";
-
   @Override
   public String createBucket(String bucketName) {
     return s3Template.createBucket(bucketName);
@@ -46,7 +44,7 @@ public class StorageServiceImpl implements StorageService {
         .contentLength(multipartFile.getSize())
         .build();
       InputStream inputStream = multipartFile.getInputStream();
-      s3Template.upload(BUCKET_NAME, key, inputStream, metadata);
+      s3Template.upload(StorageConstant.BUCKET_NAME, key, inputStream, metadata);
       return key;
     } catch (Exception e) {
       throw new S3Exception(e.getMessage(), e.getCause().getCause());
@@ -55,27 +53,27 @@ public class StorageServiceImpl implements StorageService {
 
   @Override
   public void deleteObject(String key) {
-    if (!s3Template.objectExists(BUCKET_NAME, key)) {
+    if (!s3Template.objectExists(StorageConstant.BUCKET_NAME, key)) {
       throw new ResourceNotFoundException("FileName", key);
     }
-    s3Template.deleteObject(BUCKET_NAME, key);
+    s3Template.deleteObject(StorageConstant.BUCKET_NAME, key);
   }
 
   @Override
   public S3Resource download(String fileName) {
-    if (!s3Template.objectExists(BUCKET_NAME, fileName)) {
+    if (!s3Template.objectExists(StorageConstant.BUCKET_NAME, fileName)) {
       throw new ResourceNotFoundException("FileName", fileName);
     }
-    return s3Template.download(BUCKET_NAME, fileName);
+    return s3Template.download(StorageConstant.BUCKET_NAME, fileName);
   }
 
   @Override
   public URL createSignedGetURL(String fileName) {
-    if (!s3Template.objectExists(BUCKET_NAME, fileName)) {
+    if (!s3Template.objectExists(StorageConstant.BUCKET_NAME, fileName)) {
       throw new ResourceNotFoundException("FileName", fileName);
     }
     return s3Template.createSignedGetURL(
-      BUCKET_NAME,
+      StorageConstant.BUCKET_NAME,
       fileName,
       Duration.of(1, ChronoUnit.MINUTES)
     );

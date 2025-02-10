@@ -12,12 +12,11 @@ spring:
     multipart:
       max-request-size: "10MB"
       max-file-size: "5MB"
-# TODO: set up localstack for development
   cloud:
     aws:
       credentials:
-        access-key: "${AWS_ACCESS_KEY}"
-        secret-key: "${AWS_SECRET_KEY}"
+        access-key: "${AWS_ACCESS_KEY:000000000000}"
+        secret-key: "${AWS_SECRET_KEY:000000000000}"
       s3:
-        region: "${AWS_REGION}"
-        endpoint: "${AWS_ENDPOINT}"
+        region: "${AWS_REGION:us-east-1}"
+        endpoint: "${AWS_ENDPOINT:http://s3.localhost.localstack.cloud:4566}"
