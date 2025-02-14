@@ -1,5 +1,6 @@
 package com.devcambo.springinit.audit;
 
+import com.devcambo.springinit.util.AuthUtil;
 import java.util.Optional;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,6 @@ public class AuditorAwareImpl implements AuditorAware<String> {
   @SuppressWarnings("NullableProblems")
   @Override
   public Optional<String> getCurrentAuditor() {
-    return Optional.of("admin");
+    return Optional.ofNullable(AuthUtil.getCurrentLoginUserEmail());
   }
 }

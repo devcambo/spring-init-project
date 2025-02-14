@@ -4,12 +4,15 @@ import com.devcambo.springinit.constant.StatusCode;
 import com.devcambo.springinit.model.base.ErrorInfo;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import io.awspring.cloud.s3.S3Exception;
+import io.jsonwebtoken.JwtException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -71,6 +74,30 @@ public class GlobalExceptionHandler {
   }
 
   // ===================================== 401 Exceptions =====================================
+  @ExceptionHandler(
+    value = { UsernameNotFoundException.class, BadCredentialsException.class }
+  )
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  ErrorInfo handleUnauthorizedException(Exception ex) {
+    return new ErrorInfo(
+      false,
+      StatusCode.UNAUTHORIZED,
+      "username or password is incorrect",
+      ex.getMessage()
+    );
+  }
+
+  @ExceptionHandler(JwtException.class)
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  ErrorInfo handleJwtException(JwtException ex) {
+    return new ErrorInfo(
+      false,
+      StatusCode.UNAUTHORIZED,
+      "The access token provided is expired, revoked, malformed, or invalid for other reasons",
+      ex.getMessage()
+    );
+  }
+
   // ===================================== 403 Exceptions =====================================
   // ===================================== 404 Exceptions =====================================
   @ExceptionHandler(ResourceNotFoundException.class)
