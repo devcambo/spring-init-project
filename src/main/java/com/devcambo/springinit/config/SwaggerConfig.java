@@ -2,9 +2,13 @@ package com.devcambo.springinit.config;
 
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.info.License;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
 
 @OpenAPIDefinition(
@@ -27,6 +31,15 @@ import io.swagger.v3.oas.annotations.servers.Server;
     @Server(url = "http://localhost:8080", description = "Development server"),
     @Server(url = "https://staging.devcambo.com", description = "Staging server"),
     @Server(url = "https://example.com", description = "Production server"),
-  }
+  },
+  security = { @SecurityRequirement(name = "bearerAuth") }
+)
+@SecurityScheme(
+  name = "bearerAuth",
+  description = "JSON Web Token (JWT) authentication scheme",
+  scheme = "bearer",
+  type = SecuritySchemeType.HTTP,
+  bearerFormat = "JWT",
+  in = SecuritySchemeIn.HEADER
 )
 public class SwaggerConfig {}

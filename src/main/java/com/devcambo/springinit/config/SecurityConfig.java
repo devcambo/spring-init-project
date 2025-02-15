@@ -1,5 +1,8 @@
 package com.devcambo.springinit.config;
 
+import com.devcambo.springinit.constant.SwaggerConstant;
+import com.devcambo.springinit.exception.CustomAccessDeniedHandler;
+import com.devcambo.springinit.exception.CustomAuthenticationEntryPoint;
 import com.devcambo.springinit.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -19,12 +22,22 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
   private final JwtAuthFilter authFilter;
+  private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+  private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
       .authorizeHttpRequests(auth ->
-        auth.requestMatchers("/api/auth/**").permitAll().anyRequest().authenticated()
+        auth
+          .requestMatchers(SwaggerConstant.SWAGGER_WHITE_LIST_URL)
+          .permitAll()
+          .requestMatchers("/api/auth/**")
+          .permitAll()
+          .requestMatchers("/api/buckets/**")
+          .hasAuthority("SUPER_ADMIN")
+          .anyRequest()
+          .authenticated()
       )
       .csrf(AbstractHttpConfigurer::disable)
       .formLogin(AbstractHttpConfigurer::disable)
@@ -35,6 +48,11 @@ public class SecurityConfig {
         sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
       )
       .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+      .exceptionHandling(ex ->
+        ex
+          .authenticationEntryPoint(customAuthenticationEntryPoint)
+          .accessDeniedHandler(customAccessDeniedHandler)
+      )
       .build();
   }
 

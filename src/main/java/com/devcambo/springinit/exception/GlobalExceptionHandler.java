@@ -4,14 +4,15 @@ import com.devcambo.springinit.constant.StatusCode;
 import com.devcambo.springinit.model.base.ErrorInfo;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import io.awspring.cloud.s3.S3Exception;
-import io.jsonwebtoken.JwtException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -74,6 +75,12 @@ public class GlobalExceptionHandler {
   }
 
   // ===================================== 401 Exceptions =====================================
+  /*
+   * 1. Username or password is incorrect (UsernameNotFoundException, BadCredentialsException)
+   * 2. Missing token (InsufficientAuthenticationException)
+   * 3. Expired token (JwtTokenException)
+   * 4. Invalid signature (JwtTokenException)
+   * */
   @ExceptionHandler(
     value = { UsernameNotFoundException.class, BadCredentialsException.class }
   )
@@ -87,18 +94,26 @@ public class GlobalExceptionHandler {
     );
   }
 
-  @ExceptionHandler(JwtException.class)
+  @ExceptionHandler(InsufficientAuthenticationException.class)
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
-  ErrorInfo handleJwtException(JwtException ex) {
+  ErrorInfo handleInsufficientAuthenticationException(
+    InsufficientAuthenticationException ex
+  ) {
     return new ErrorInfo(
       false,
       StatusCode.UNAUTHORIZED,
-      "The access token provided is expired, revoked, malformed, or invalid for other reasons",
+      "Login is required for this API endpoint",
       ex.getMessage()
     );
   }
 
   // ===================================== 403 Exceptions =====================================
+  @ExceptionHandler(AccessDeniedException.class)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  ErrorInfo handleAccessDeniedException(AccessDeniedException ex) {
+    return new ErrorInfo(false, StatusCode.FORBIDDEN, "No permission", ex.getMessage());
+  }
+
   // ===================================== 404 Exceptions =====================================
   @ExceptionHandler(ResourceNotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)

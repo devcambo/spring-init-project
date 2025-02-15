@@ -32,6 +32,46 @@ public class AuthController {
 
   private final AuthService authService;
 
+  @Operation(
+    summary = "Register User REST API",
+    description = "REST API to register a new user"
+  )
+  @ApiResponses(
+    {
+      @ApiResponse(
+        responseCode = "200",
+        description = "HTTP Status OK",
+        content = @Content(
+          mediaType = "application/json",
+          schema = @Schema(implementation = APIResponse.class)
+        )
+      ),
+      @ApiResponse(
+        responseCode = "400",
+        description = "Invalid request parameters or body",
+        content = @Content(
+          mediaType = "application/json",
+          schema = @Schema(implementation = ErrorInfo.class)
+        )
+      ),
+      @ApiResponse(
+        responseCode = "405",
+        description = "This http method is not allowed for this API endpoint",
+        content = @Content(
+          mediaType = "application/json",
+          schema = @Schema(implementation = ErrorInfo.class)
+        )
+      ),
+      @ApiResponse(
+        responseCode = "500",
+        description = "HTTP Status Internal Server Error",
+        content = @Content(
+          mediaType = "application/json",
+          schema = @Schema(implementation = ErrorInfo.class)
+        )
+      ),
+    }
+  )
   @PostMapping("/register")
   public ResponseEntity<APIResponse> register(
     @Valid @RequestBody RegisterDto registerDto

@@ -1,3 +1,5 @@
 package com.devcambo.springinit.model.dto.response;
 
-public record LoginResponseDto(String token) {}
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record LoginResponseDto(@JsonProperty("jwt_token") String token) {}

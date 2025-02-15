@@ -18,7 +18,7 @@ public record RegisterDto(
   @Schema(description = "Email address", example = "example@example.com")
   String email,
   @NotEmpty(message = "Password is required!")
-  @Schema(description = "Password", example = "password123")
+  @Schema(description = "Password", example = "password")
   String password,
   @NotNull(message = "Gender is required!")
   @Schema(

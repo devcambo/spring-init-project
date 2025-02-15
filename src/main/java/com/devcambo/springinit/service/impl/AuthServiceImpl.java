@@ -10,7 +10,6 @@ import com.devcambo.springinit.service.AuthService;
 import com.devcambo.springinit.service.JwtService;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,7 +17,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -31,14 +29,12 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public LoginResponseDto login(LoginRequestDto loginRequestDto) {
-    log.info("Login request: {}", loginRequestDto);
     Authentication authentication = authenticationManager.authenticate(
       new UsernamePasswordAuthenticationToken(
         loginRequestDto.email(),
         loginRequestDto.password()
       )
     );
-    log.info("Authentication: {}", authentication);
     String token;
     String authorities;
     authorities =
@@ -47,19 +43,19 @@ public class AuthServiceImpl implements AuthService {
         .stream()
         .map(GrantedAuthority::getAuthority)
         .collect(Collectors.joining(","));
-    token = jwtService.generateToken(loginRequestDto.email(), authorities);
-    return new LoginResponseDto(token);
+    return new LoginResponseDto(
+      jwtService.generateToken(loginRequestDto.email(), authorities)
+    );
   }
 
   @Override
   public LoginResponseDto register(RegisterDto registerDto) {
     User user = userMapper.toEntity(registerDto);
     user.setPassword(passwordEncoder.encode(user.getPassword()));
-    user.setRoles("ADMIN,USER,SYSTEM");
+    user.setRoles("SUPER_ADMIN,ADMIN,USER,SYSTEM");
     User registeredUser = userRepo.save(user);
-    String token = "";
-    token =
-      jwtService.generateToken(registeredUser.getEmail(), registeredUser.getRoles());
-    return new LoginResponseDto(token);
+    return new LoginResponseDto(
+      jwtService.generateToken(registeredUser.getEmail(), registeredUser.getRoles())
+    );
   }
 }

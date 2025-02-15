@@ -20,3 +20,5 @@ spring:
       s3:
         region: "${AWS_REGION:us-east-1}"
         endpoint: "${AWS_ENDPOINT:http://s3.localhost.localstack.cloud:4566}"
+springdoc:
+  override-with-generic-response: "false"
