@@ -14,5 +14,11 @@ public interface AuthService {
    */
   LoginResponseDto login(LoginRequestDto loginRequestDto);
 
+  /**
+   * Registers a new user and returns a login response.
+   *
+   * @param registerDto The registration data transfer object containing user information.
+   * @return A login response data transfer object containing authentication details.
+   */
   LoginResponseDto register(RegisterDto registerDto);
 }
