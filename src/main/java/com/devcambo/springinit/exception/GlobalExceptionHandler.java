@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -71,7 +75,45 @@ public class GlobalExceptionHandler {
   }
 
   // ===================================== 401 Exceptions =====================================
+  /*
+   * 1. Username or password is incorrect (UsernameNotFoundException, BadCredentialsException)
+   * 2. Missing token (InsufficientAuthenticationException)
+   * 3. Expired token (JwtTokenException)
+   * 4. Invalid signature (JwtTokenException)
+   * */
+  @ExceptionHandler(
+    value = { UsernameNotFoundException.class, BadCredentialsException.class }
+  )
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  ErrorInfo handleUnauthorizedException(Exception ex) {
+    return new ErrorInfo(
+      false,
+      StatusCode.UNAUTHORIZED,
+      "username or password is incorrect",
+      ex.getMessage()
+    );
+  }
+
+  @ExceptionHandler(InsufficientAuthenticationException.class)
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  ErrorInfo handleInsufficientAuthenticationException(
+    InsufficientAuthenticationException ex
+  ) {
+    return new ErrorInfo(
+      false,
+      StatusCode.UNAUTHORIZED,
+      "Login is required for this API endpoint",
+      ex.getMessage()
+    );
+  }
+
   // ===================================== 403 Exceptions =====================================
+  @ExceptionHandler(AccessDeniedException.class)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  ErrorInfo handleAccessDeniedException(AccessDeniedException ex) {
+    return new ErrorInfo(false, StatusCode.FORBIDDEN, "No permission", ex.getMessage());
+  }
+
   // ===================================== 404 Exceptions =====================================
   @ExceptionHandler(ResourceNotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)

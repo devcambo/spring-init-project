@@ -59,7 +59,15 @@ class UserServiceImplTest {
 
   @BeforeEach
   void setUp() {
-    userExample = new User(3L, "Example", "example@example.com", "password", Gender.MALE);
+    userExample =
+      new User(
+        3L,
+        "Example",
+        "example@example.com",
+        "password",
+        Gender.MALE,
+        "ADMIN,USER"
+      );
     userId = userExample.getUserId();
     userCreationDtoExample =
       new UserCreationDto(
@@ -72,8 +80,22 @@ class UserServiceImplTest {
       new UserUpdateDto("Update Example", "update@example.com", Gender.MALE);
     userResponseDtoExample =
       new UserResponseDto(3L, "Response Example", "response@example.com", Gender.MALE);
-    User u1 = new User(1L, "John Doe", "7sCm6@example.com", "password", Gender.MALE);
-    User u2 = new User(2L, "Kate Jones", "oUw0X@example.com", "password", Gender.FEMALE);
+    User u1 = new User(
+      1L,
+      "John Doe",
+      "7sCm6@example.com",
+      "password",
+      Gender.MALE,
+      "ADMIN,USER"
+    );
+    User u2 = new User(
+      2L,
+      "Kate Jones",
+      "oUw0X@example.com",
+      "password",
+      Gender.FEMALE,
+      "ADMIN,USER"
+    );
     users = Arrays.asList(u1, u2);
   }
 
