@@ -1,4 +1,4 @@
-package com.devcambo.springinit.audit;
+package com.devcambo.springinit.service.impl;
 
 import com.devcambo.springinit.util.AuthUtil;
 import java.util.Optional;
