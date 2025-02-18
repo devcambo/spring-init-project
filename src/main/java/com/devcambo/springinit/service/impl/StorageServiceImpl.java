@@ -53,30 +53,30 @@ public class StorageServiceImpl implements StorageService {
 
   @Override
   public void deleteObject(String key) {
-    if (!s3Template.objectExists(StorageConstant.BUCKET_NAME, key)) {
-      throw new ResourceNotFoundException("FileName", key);
-    }
+    getFileByName(key);
     s3Template.deleteObject(StorageConstant.BUCKET_NAME, key);
   }
 
   @Override
   public S3Resource download(String fileName) {
-    if (!s3Template.objectExists(StorageConstant.BUCKET_NAME, fileName)) {
-      throw new ResourceNotFoundException("FileName", fileName);
-    }
+    getFileByName(fileName);
     return s3Template.download(StorageConstant.BUCKET_NAME, fileName);
   }
 
   @Override
   public URL createSignedGetURL(String fileName) {
-    if (!s3Template.objectExists(StorageConstant.BUCKET_NAME, fileName)) {
-      throw new ResourceNotFoundException("FileName", fileName);
-    }
+    getFileByName(fileName);
     return s3Template.createSignedGetURL(
       StorageConstant.BUCKET_NAME,
       fileName,
       Duration.of(1, ChronoUnit.MINUTES)
     );
+  }
+
+  private void getFileByName(String key) {
+    if (!s3Template.objectExists(StorageConstant.BUCKET_NAME, key)) {
+      throw new ResourceNotFoundException("fileName", key);
+    }
   }
 
   private String generateUniqueFileName(String originalImageName) {
