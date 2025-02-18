@@ -35,14 +35,11 @@ public class AuthServiceImpl implements AuthService {
         loginRequestDto.password()
       )
     );
-    String token;
-    String authorities;
-    authorities =
-      authentication
-        .getAuthorities()
-        .stream()
-        .map(GrantedAuthority::getAuthority)
-        .collect(Collectors.joining(","));
+    String authorities = authentication
+      .getAuthorities()
+      .stream()
+      .map(GrantedAuthority::getAuthority)
+      .collect(Collectors.joining(","));
     return new LoginResponseDto(
       jwtService.generateToken(loginRequestDto.email(), authorities)
     );
@@ -52,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
   public LoginResponseDto register(RegisterDto registerDto) {
     User user = userMapper.toEntity(registerDto);
     user.setPassword(passwordEncoder.encode(user.getPassword()));
-    user.setRoles("SUPER_ADMIN,ADMIN,USER,SYSTEM");
+    user.setRoles("SUPER_ADMIN,ADMIN,USER,SYSTEM"); // TODO: Set roles for register user by system only USER, or sth but not full authority
     User registeredUser = userRepo.save(user);
     return new LoginResponseDto(
       jwtService.generateToken(registeredUser.getEmail(), registeredUser.getRoles())
