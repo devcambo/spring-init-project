@@ -22,3 +22,5 @@ spring:
         endpoint: "${AWS_ENDPOINT:http://s3.localhost.localstack.cloud:4566}"
 springdoc:
   override-with-generic-response: "false"
+cors:
+  allowed-origins: "${CORS_ALLOWED_ORIGINS:http://localhost:3000}"
