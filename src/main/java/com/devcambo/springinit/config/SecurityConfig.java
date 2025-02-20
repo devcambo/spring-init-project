@@ -4,6 +4,7 @@ import com.devcambo.springinit.constant.SwaggerConstant;
 import com.devcambo.springinit.exception.CustomAccessDeniedHandler;
 import com.devcambo.springinit.exception.CustomAuthenticationEntryPoint;
 import com.devcambo.springinit.filter.JwtAuthFilter;
+import java.time.Duration;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +47,7 @@ public class SecurityConfig {
           .anyRequest()
           .authenticated()
       )
+      .cors(c -> c.configurationSource(corsConfigurationSource()))
       .csrf(AbstractHttpConfigurer::disable)
       .formLogin(AbstractHttpConfigurer::disable)
       .logout(AbstractHttpConfigurer::disable)
@@ -79,6 +81,8 @@ public class SecurityConfig {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(List.of(allowedOrigins));
     configuration.setAllowedMethods(List.of("*"));
+    configuration.setAllowedHeaders(List.of("*"));
+    configuration.setMaxAge(Duration.ofMinutes(5L));
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
     return source;
